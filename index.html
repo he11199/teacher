@@ -1,0 +1,110 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>智能老师工具（含AI答疑）</title>
+  <style>
+    body { font-family: Arial, sans-serif; background: #f4f4f4; margin: 0; padding: 0; }
+    header, main { max-width: 800px; margin: auto; padding: 20px; }
+    h1, h2 { text-align: center; }
+    section { background: #fff; padding: 15px; margin-bottom: 20px; border-radius: 10px; box-shadow: 0 0 10px rgba(0,0,0,0.05); }
+    label, select, input, button, textarea { display: block; width: 100%; margin: 10px 0; padding: 10px; font-size: 1rem; }
+    button { background: #007bff; color: #fff; border: none; cursor: pointer; }
+    button:hover { background: #0056b3; }
+    #ai-answer { white-space: pre-wrap; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>智能老师工具</h1>
+    <p style="text-align:center">线下场景：快速组卷、批改、学情报告 + AI答疑</p>
+  </header>
+
+  <main>
+    <!-- 登录模块 -->
+    <section id="login">
+      <h2>教师登录</h2>
+      <input type="text" placeholder="用户名" />
+      <input type="password" placeholder="密码" />
+      <button onclick="alert('登录成功')">登录</button>
+    </section>
+
+    <!-- 组卷模块 -->
+    <section id="quiz-generator">
+      <h2>组卷页面</h2>
+      <label>选择年级</label>
+      <select>
+        <option>初一</option>
+        <option>初二</option>
+        <option>初三</option>
+      </select>
+
+      <label>选择学科</label>
+      <select>
+        <option>数学</option>
+        <option>语文</option>
+        <option>英语</option>
+      </select>
+
+      <label>选择难度</label>
+      <select>
+        <option>简单</option>
+        <option>中等</option>
+        <option>困难</option>
+      </select>
+
+      <button onclick="alert('试卷已生成')">生成试卷</button>
+      <button onclick="alert('试卷已发布')">发布给学生</button>
+    </section>
+
+    <!-- 批改模块 -->
+    <section id="grading">
+      <h2>批改页面</h2>
+      <p>上传照片或输入答案进行批改（演示）</p>
+      <button onclick="alert('模拟批改完成')">批改试卷</button>
+      <button onclick="alert('已生成学情报告')">生成学情报告</button>
+    </section>
+
+    <!-- ✅ 新增：AI答疑模块 -->
+    <section id="ai-qa">
+      <h2>🧠 AI答疑助手</h2>
+      <textarea id="question" rows="4" placeholder="输入题目或教学问题..."></textarea>
+      <button onclick="askAI()">提交问题</button>
+      <div id="ai-answer"></div>
+    </section>
+  </main>
+
+  <script>
+    async function askAI() {
+      const question = document.getElementById('question').value;
+      if (!question.trim()) {
+        alert('请输入问题！');
+        return;
+      }
+
+      document.getElementById('ai-answer').innerText = 'AI 思考中...';
+
+      const response = await fetch('https://api.openai.com/v1/chat/completions', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer YOUR_OPENAI_API_KEY'  // 请替换成你的 OpenAI API Key
+        },
+        body: JSON.stringify({
+          model: 'gpt-4o',
+          messages: [
+            { role: 'system', content: '你是一个教辅AI，回答老师教学问题。' },
+            { role: 'user', content: question }
+          ]
+        })
+      });
+
+      const result = await response.json();
+      const answer = result.choices?.[0]?.message?.content || 'AI 暂时无法解答。';
+      document.getElementById('ai-answer').innerText = answer;
+    }
+  </script>
+</body>
+</html>
